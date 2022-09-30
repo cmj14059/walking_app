@@ -38,6 +38,15 @@ enum AppState {
   AUTH_NOT_GRANTED
 }
 
+//手動入力を排除
+bool isManualData(HealthDataPoint p) {
+  if(p.sourceId == "com.apple.Health") {
+    return true;
+  } else {
+    return false;
+  }
+}
+
 class _MyHomePageState extends State<MyHomePage> {
   List<HealthDataPoint> _healthDataList = [];
   AppState _state = AppState.DATA_NOT_FETCHED;
@@ -50,7 +59,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Future fetchData() async {
     /// Get everything from midnight until now
     final now = DateTime.now();
-    DateTime startDate = DateTime(2022, 4, 01, 0, 0, 0);
+    DateTime startDate = DateTime(now.year, now.month, now.day, 11, 0, 0);
     DateTime endDate = DateTime(now.year, now.month, now.day, 23, 59, 59);
 
     HealthFactory health = HealthFactory();
@@ -58,10 +67,10 @@ class _MyHomePageState extends State<MyHomePage> {
     /// Define the types to get.
     List<HealthDataType> types = [
       HealthDataType.STEPS,
-      HealthDataType.WEIGHT,
-      HealthDataType.HEIGHT,
-      HealthDataType.BLOOD_GLUCOSE,
-      HealthDataType.DISTANCE_WALKING_RUNNING,
+      // HealthDataType.WEIGHT,
+      // HealthDataType.HEIGHT,
+      // HealthDataType.BLOOD_GLUCOSE,
+      // HealthDataType.DISTANCE_WALKING_RUNNING,
     ];
 
     setState(() => _state = AppState.FETCHING_DATA);
@@ -88,8 +97,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
       /// Print the results
       _healthDataList.forEach((x) {
-        print("Data point: $x");
-        steps += x.value.hashCode;
+        if(!isManualData(x)) {
+          print("Data point: $x");
+          steps += x.value.hashCode;
+        }
       });
 
       print("Steps: $steps");
@@ -123,9 +134,10 @@ class _MyHomePageState extends State<MyHomePage> {
     num pAll = 0;
     for(int i = 0; i < _healthDataList.length; i++) {
       HealthDataPoint p = _healthDataList[i];
-      pAll += p.value.hashCode;
+      if(!isManualData(p)) {
+        pAll += p.value.hashCode;
+      }
     }
-    //p.valueをfor文で回して全て足し合わせたいけど、p.valueの型の問題でそのままでは足し算ができない
     HealthDataPoint p = _healthDataList[0];
     return Text(
       "$pAll",
