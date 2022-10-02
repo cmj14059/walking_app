@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:health/health.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'main.dart';
+import 'CircleProgress.dart';
+import 'EmptyAppBar.dart';
 
 //void main() {
   //runApp(const MyApp());
@@ -36,15 +37,6 @@ enum AppState {
   DATA_READY,
   NO_DATA,
   AUTH_NOT_GRANTED
-}
-
-//手動入力を排除
-bool isManualData(HealthDataPoint p) {
-  if(p.sourceId == "com.apple.Health") {
-    return true;
-  } else {
-    return false;
-  }
 }
 
 class _MyHomePageState extends State<MyHomePage> {
@@ -138,23 +130,14 @@ class _MyHomePageState extends State<MyHomePage> {
         pAll += p.value.hashCode;
       }
     }
-    HealthDataPoint p = _healthDataList[0];
     return Text(
       "$pAll",
       style: const TextStyle(
-        color: Colors.white,
+        color: Colors.black,
+        fontSize: 100,
       ),
     );
-    return ListView.builder(
-        itemCount: _healthDataList.length,
-        itemBuilder: (_, index) {
-          HealthDataPoint p = _healthDataList[index];
-          return ListTile(
-            title: Text("${p.typeString}: ${p.value}"),
-            trailing: Text('${p.unitString}'),
-            subtitle: Text('${p.dateFrom} - ${p.dateTo}'),
-          );
-        });
+
   }
 
   Widget _contentNoData() {
@@ -184,15 +167,51 @@ class _MyHomePageState extends State<MyHomePage> {
     return _contentNotFetched();
   }
 
+  //歩数が手動入力かどうか判定
+  bool isManualData(HealthDataPoint p) {
+    if(p.sourceId == "com.apple.Health") {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  //歩数のカウントを円で可視化
+  Widget getCircleProgress(int step) {
+    return Stack(
+      children: [
+        CustomPaint(
+          size: const Size(300,300),
+          foregroundPainter: CircleProgress(step),
+        ),
+        _content(),
+      ],
+    );
+  }
+
+  //歩数の上限を設定
+
+////build
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.blueGrey,
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text("Walking App fight!"),
+        title: const Text(
+            'Bit Walk',
+          style: TextStyle(
+            color: Colors.black,
+          ),
+        ),
+        backgroundColor: Colors.white,
+        elevation: 0.0,
         actions: <Widget>[
           IconButton(
-            icon: const Icon(Icons.file_download),
+            icon: const Icon(
+                Icons.file_download,
+              color: Colors.black,
+            ),
             onPressed: () async {
               await Permission.activityRecognition.request().isGranted;
               await fetchData();
@@ -200,37 +219,72 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ],
       ),
-      body: Column(
-        children: [
-          _content(),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-            Stack(
-              children:  [
-                _content(),
-                Align(
-                  alignment: Alignment(0,0),
-                  child: Icon(
-                    Icons.circle,
-                    size: 300,
-                    color: Colors.orange,
-                  ),
+      
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Row(
+              children: [
+                const SizedBox(
+                  height: 120,
+                  width: 5,
                 ),
-                Align(
-                  alignment: Alignment(0,0),
-                  child: Text(
-                    "2",
+                ElevatedButton.icon(
+                  onPressed: () {},
+                  style: ElevatedButton.styleFrom(
+                    fixedSize: Size(120,70),
+                    primary: Colors.purple,
+                    onPrimary: Colors.grey,
+                  ),
+                  icon: const Icon(
+                    Icons.shop,
+                    color: Colors.black,
+                  ),
+                  label: const Text(
+                    "交換所",
                     style: TextStyle(
-                      fontSize: 200,
+                      fontSize: 20,
+                      color: Colors.black,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
+
+                const Spacer(),
+
+                ElevatedButton.icon(
+                  onPressed: () {},
+                  style: ElevatedButton.styleFrom(
+                    fixedSize: Size(110,60),
+                    primary: Colors.grey,
+                    onPrimary: Colors.grey,
+                  ),
+                  icon: const Icon(
+                    Icons.money,
+                    color: Colors.black,
+                  ),
+                  label: const Text(
+                    "100 gem",
+                    style: TextStyle(
+                        fontSize: 20,
+                        color: Colors.black
+                    ),
+                  ),
+                ),
+                const SizedBox(
+                  height: 120,
+                  width: 5,
+                ),
               ],
             ),
+
+            getCircleProgress(60),
+
+            Center(
+              child: _content(),
+            ),
             Container(
-              //color: Colors.white,
+              height: 300,
               child: const Text('I am Takumi Koide',
                   style: TextStyle(
                     color: Colors.black,
@@ -238,7 +292,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
 
             Container(
-              //color: Colors.white,
+              height: 300,
               child: const Text(
                 'make page1, use Stack and Align, BottomNavigationBar',
                 style: TextStyle(
@@ -246,24 +300,25 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ),
             ),
-            SizedBox(
-              width: 100,
-              height: 100,
-              child: RaisedButton(
-                color: Colors.blue,
-                onPressed: () {
-                  //unnko
-                },
-                child: const Text(
-                    '健康第一',
-                    style: TextStyle(
-                      color: Colors.white,
-                    )),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                fixedSize: Size(50, 300),
+                primary: Colors.blue,
+                onPrimary: Colors.red,
+              ),
+              onPressed: () async {
+                await Permission.activityRecognition.request().isGranted;
+                await fetchData();
+              },
+              child: const Text(
+                  '健康第一',
+                  style: TextStyle(
+                    color: Colors.white,
+                  )
               ),
             ),
-          ],
+        ],
         ),
-      ],
       ),
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Colors.blueGrey,
