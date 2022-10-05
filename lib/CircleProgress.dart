@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:math';
 
 class CircleProgress extends CustomPainter {
-  int currentProgress;
+  num currentProgress;
 
   CircleProgress(this.currentProgress);
 
@@ -23,7 +23,7 @@ class CircleProgress extends CustomPainter {
 
     canvas.drawCircle(center, radius, outerCircle);
 
-    double angle = 2 * pi * (currentProgress / 100);
+    double angle = 2 * pi * (currentProgress / 10000);
     canvas.drawArc(
         Rect.fromCircle(center: center, radius: radius), -pi / 2, angle, false, completeArc);
   }

@@ -51,7 +51,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Future fetchData() async {
     /// Get everything from midnight until now
     final now = DateTime.now();
-    DateTime startDate = DateTime(now.year, now.month, now.day, 11, 0, 0);
+    DateTime startDate = DateTime(now.year, now.month, now.day, 0, 0, 0);
     DateTime endDate = DateTime(now.year, now.month, now.day, 23, 59, 59);
 
     HealthFactory health = HealthFactory();
@@ -88,12 +88,12 @@ class _MyHomePageState extends State<MyHomePage> {
       _healthDataList = HealthFactory.removeDuplicates(_healthDataList);
 
       /// Print the results
-      _healthDataList.forEach((x) {
+      for (var x in _healthDataList) {
         if(!isManualData(x)) {
           print("Data point: $x");
           steps += x.value.hashCode;
         }
-      });
+      }
 
       print("Steps: $steps");
 
@@ -113,28 +113,21 @@ class _MyHomePageState extends State<MyHomePage> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
         Container(
-            padding: EdgeInsets.all(20),
-            child: CircularProgressIndicator(
+            padding: const EdgeInsets.all(20),
+            child: const CircularProgressIndicator(
               strokeWidth: 10,
             )),
-        Text('Fetching data...')
+        const Text('Fetching data...')
       ],
     );
   }
 
   Widget _contentDataReady() {
-    num pAll = 0;
-    for(int i = 0; i < _healthDataList.length; i++) {
-      HealthDataPoint p = _healthDataList[i];
-      if(!isManualData(p)) {
-        pAll += p.value.hashCode;
-      }
-    }
     return Text(
-      "$pAll",
+      "${getAllStep()}",
       style: const TextStyle(
         color: Colors.black,
-        fontSize: 100,
+        fontSize: 75,
       ),
     );
 
@@ -176,15 +169,53 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  //歩数の合計をnum型で取得
+  num getAllStep() {
+    num pAll = 0;
+    for(int i = 0; i < _healthDataList.length; i++) {
+      HealthDataPoint p = _healthDataList[i];
+      // if(!isManualData(p)) {
+      //   pAll += p.value.hashCode;
+      // }
+      pAll += p.value.hashCode;
+    }
+    return pAll;
+  }
+
   //歩数のカウントを円で可視化
-  Widget getCircleProgress(int step) {
+  Widget getCircleProgress() {
+    const double s = 300;
     return Stack(
+
       children: [
-        CustomPaint(
-          size: const Size(300,300),
-          foregroundPainter: CircleProgress(step),
+        Align(
+          alignment: const Alignment(0,0),
+          child: CustomPaint(
+            size: const Size(s,s),
+            foregroundPainter: CircleProgress(getAllStep()),
+          ),
         ),
-        _content(),
+        SizedBox(
+          height: 3/4*s,
+          child: Align(
+            alignment: const Alignment(0,0),
+            child: _content(),
+          ),
+        ),
+        const SizedBox(
+          height: 5/4*s,
+          child: Align(
+            alignment: Alignment(0, 0),
+            child: Text(
+              '今日の歩数',
+              style: TextStyle(
+                color: Colors.cyan,
+                fontSize: 30
+              ),
+            ),
+          ),
+        )
+
       ],
     );
   }
@@ -230,7 +261,10 @@ class _MyHomePageState extends State<MyHomePage> {
                   width: 5,
                 ),
                 ElevatedButton.icon(
-                  onPressed: () {},
+                  onPressed: () async {
+                    await Permission.activityRecognition.request().isGranted;
+                    await fetchData();
+                  },
                   style: ElevatedButton.styleFrom(
                     fixedSize: Size(120,70),
                     primary: Colors.purple,
@@ -255,7 +289,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 ElevatedButton.icon(
                   onPressed: () {},
                   style: ElevatedButton.styleFrom(
-                    fixedSize: Size(110,60),
+                    fixedSize: const Size(110,60),
                     primary: Colors.grey,
                     onPrimary: Colors.grey,
                   ),
@@ -263,8 +297,8 @@ class _MyHomePageState extends State<MyHomePage> {
                     Icons.money,
                     color: Colors.black,
                   ),
-                  label: const Text(
-                    "100 gem",
+                  label: Text(
+                    "${getAllStep() / 100} gem",
                     style: TextStyle(
                         fontSize: 20,
                         color: Colors.black
@@ -278,22 +312,19 @@ class _MyHomePageState extends State<MyHomePage> {
               ],
             ),
 
-            getCircleProgress(60),
+            getCircleProgress(),
 
-            Center(
-              child: _content(),
-            ),
-            Container(
+            const SizedBox(
               height: 300,
-              child: const Text('I am Takumi Koide',
+              child: Text('I am Takumi Koide',
                   style: TextStyle(
                     color: Colors.black,
                   )),
             ),
 
-            Container(
+            const SizedBox(
               height: 300,
-              child: const Text(
+              child: Text(
                 'make page1, use Stack and Align, BottomNavigationBar',
                 style: TextStyle(
                   color: Colors.black,
