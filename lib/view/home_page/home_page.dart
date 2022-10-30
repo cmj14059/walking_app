@@ -7,19 +7,38 @@ import 'package:video_player/video_player.dart';
 import 'package:walking_app/view_model/health/health_notifier.dart';
 import 'step_circle_progress.dart';
 
-
-  //歩数の上限を設定
-class HomePage extends ConsumerWidget{
+class HomePage extends ConsumerStatefulWidget {
   const HomePage({Key? key}) : super(key: key);
+
+  @override
+  HomePageState createState() => HomePageState();
+}
+class HomePageState extends ConsumerState<HomePage> {
+
+  late Future<void> futureInit;  //FutureBuilderで待つ初期化処理
+
+  @override
+  void initState() {
+    super.initState();
+
+    //起動時歩数を更新して表示
+    final state = ref.read(healthNotifierProvider);
+    final stateProvider = ref.read(healthNotifierProvider.notifier);
+    futureInit = stateProvider.updateData();
+
+    print(ref.read(healthNotifierProvider.notifier).state.appState);
+  }
 
 ////build
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     var screenSize = MediaQuery.of(context).size;
 
     final healthState = ref.watch(healthNotifierProvider);
     final healthStateNotifier = ref.watch(healthNotifierProvider.notifier);
+
+    healthStateNotifier.updateData;
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -63,7 +82,9 @@ class HomePage extends ConsumerWidget{
             const Spacer(),
 
             ElevatedButton.icon(
-              onPressed: () {},
+              onPressed: () {
+                print(healthStateNotifier.state.appState);
+              },
               style: ElevatedButton.styleFrom(
                 fixedSize: const Size(110,60),
                 primary: Colors.grey,
@@ -155,7 +176,15 @@ class HomePage extends ConsumerWidget{
               ],
             ),
 
-            showCircleProgress(ref),
+            FutureBuilder(
+              future: futureInit,
+              builder: (BuildContext context, AsyncSnapshot snapshot) {
+                // if(snapshot.hasData)
+                //   return showCircleProgress(ref);
+                // else return healthStateNotifier.content();
+                return showCircleProgress(ref);
+              },
+            ),
 
             Container(
               height: screenSize.height*0.05,

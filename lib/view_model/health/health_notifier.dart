@@ -5,9 +5,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:walking_app/model/health/health_state.dart';
 
 
-final healthNotifierProvider = StateNotifierProvider((ref) {
-  return HealthNotifier();
-});
+final healthNotifierProvider = StateNotifierProvider((ref) => HealthNotifier());
 
 
 class HealthNotifier extends StateNotifier<HealthState> {
@@ -28,7 +26,6 @@ class HealthNotifier extends StateNotifier<HealthState> {
     ];
 
     state = HealthState(appState: AppState.FETCHING_DATA);
-    print(state.appState);
 
     /// You MUST request access to the data types before reading them
     bool accessWasGranted = await health.requestAuthorization(types);
@@ -68,7 +65,6 @@ class HealthNotifier extends StateNotifier<HealthState> {
       print("Authorization not granted");
       state = HealthState(appState: AppState.DATA_NOT_FETCHED);
     }
-    print(state.appState);
   }
 
   Widget _contentFetchingData() {
@@ -79,9 +75,10 @@ class HealthNotifier extends StateNotifier<HealthState> {
             padding: const EdgeInsets.all(20),
             child: const CircularProgressIndicator(
               strokeWidth: 10,
+              color: Colors.blueGrey,
             )
         ),
-        const Text('loading...')
+        // const Text('loading...')
       ],
     );
   }
@@ -120,7 +117,6 @@ class HealthNotifier extends StateNotifier<HealthState> {
     if (state.appState == AppState.DATA_READY)
       return _contentDataReady();
     else if (state.appState == AppState.NO_DATA) {
-      print("ba-ka");
       return _contentNoData();
     }
     else if (state.appState == AppState.FETCHING_DATA)
@@ -157,5 +153,7 @@ class HealthNotifier extends StateNotifier<HealthState> {
   Future<void> updateData() async {
     await Permission.activityRecognition.request().isGranted;
     await fetchData();
+    print(state.appState);
   }
+
 }
