@@ -12,7 +12,7 @@ class ShopPage extends StatelessWidget {
           preferredSize: const Size.fromHeight(60),
           child: AppBar(
             title: const Text(
-              'Bit Walk',
+              'Shop Page',
               style: TextStyle(
                 color: Colors.black,
               ),

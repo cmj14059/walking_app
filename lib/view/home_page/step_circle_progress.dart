@@ -3,7 +3,7 @@ import 'dart:math';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../view_model/health/health_notifier.dart';
+import '../../view_model/home_page/health/health_notifier.dart';
 
 class CircleProgress extends CustomPainter {
   num currentProgress;
@@ -12,10 +12,12 @@ class CircleProgress extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
+    //歩いてない分
     Paint outerCircle = Paint()
       ..strokeWidth = 31
-      ..color = Colors.grey.withOpacity(0.2)
+      ..color = Colors.white60.withOpacity(0.2)
       ..style = PaintingStyle.stroke;
+    //歩いた分
     Paint completeArc = Paint()
       ..strokeWidth = 30
       ..color = Colors.cyan

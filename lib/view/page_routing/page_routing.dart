@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:walking_app/const/color/color.dart';
 import 'package:walking_app/model/page_routing/page_routing_state.dart';
 import 'package:walking_app/view_model/page_routing/page_routing_notifier.dart';
 
+import '../../view_model/home_page/health/health_notifier.dart';
 import '../home_page/home_page.dart';
 import '../my_page/my_page.dart';
 import '../shop_page/shop_page.dart';
@@ -12,14 +14,17 @@ class PageRouting extends ConsumerWidget{
 
   final _pages = <Widget>[
     HomePage(),
-    MyPage(),
     ShopPage(),
+    MyPage(),
   ];
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final pageRoutingState = ref.watch(pageRoutingProvider);
     final pageRoutingStateNotifier = ref.watch(pageRoutingProvider.notifier);
+
+    final healthState = ref.watch(healthNotifierProvider);
+    final healthStateNotifier = ref.watch(healthNotifierProvider.notifier);
 
     int selectIndex = pageRoutingStateNotifier.getIndex();
     return Scaffold(
@@ -44,7 +49,7 @@ class PageRouting extends ConsumerWidget{
         ],
         selectedIconTheme: const IconThemeData(
           size: 40,
-          color: Colors.blueAccent,
+          color: BOTTOM_BAR_ITEM_COLOR,
           shadows: [
             Shadow(
               color: Colors.blueGrey,
@@ -54,7 +59,7 @@ class PageRouting extends ConsumerWidget{
           ],
         ),
         unselectedIconTheme: const IconThemeData(
-          color: Colors.blueGrey,
+          color: WHITE,
           shadows: [
             Shadow(
               color: Colors.blueGrey,
@@ -63,6 +68,7 @@ class PageRouting extends ConsumerWidget{
             )
           ],
         ),
+        backgroundColor: Colors.blue,
         enableFeedback: true,
         type: BottomNavigationBarType.fixed,
         currentIndex: selectIndex,
@@ -70,5 +76,4 @@ class PageRouting extends ConsumerWidget{
       ),
     );
   }
-
 }
