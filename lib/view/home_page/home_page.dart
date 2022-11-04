@@ -60,86 +60,90 @@ class HomePageState extends ConsumerState<HomePage> {
       ),
       child: Scaffold(
         backgroundColor: Colors.transparent,
-        appBar: PreferredSize(
-          preferredSize: const Size.fromHeight(60),
-          child: AppBar(
-            title: const Text(
-              'Bit Walk',
-              style: TextStyle(
-                color: Colors.black,
-              ),
-            ),
-            backgroundColor: APP_BAR_COLOR,
-            elevation: 0.0,
-            actions: <Widget>[
-              const SizedBox(
-                height: 60,
-                width: 5,
-              ),
-              ElevatedButton.icon(
-                onPressed: healthStateNotifier.updateData,
-                style: ElevatedButton.styleFrom(
-                  fixedSize: const Size(120,60),
-                  primary: Colors.purple.withOpacity(0.3),
-                  onPrimary: Colors.grey,
-                ),
-                icon: const Icon(
-                  Icons.shop,
-                  color: Colors.black,
-                ),
-                label: const Text(
-                  "交換所",
-                  style: TextStyle(
-                    fontSize: 20,
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-
-              const Spacer(),
-
-              ElevatedButton.icon(
-                onPressed: () {
-                  pageRoutingStateNotifier.goShopPage();
-                },
-                style: ElevatedButton.styleFrom(
-                  fixedSize: const Size(110,60),
-                  primary: Colors.grey,
-                  onPrimary: Colors.grey,
-                ),
-                icon: const Icon(
-                  Icons.money,
-                  color: Colors.black,
-                ),
-                label: Text(
-                  "${healthStateNotifier.getAllStep() / 1000} gem",
-                  style: const TextStyle(
-                      fontSize: 20,
-                      color: Colors.black
-                  ),
-                ),
-              ),
-              const SizedBox(
-                height: 60,
-                width: 5,
-              ),
-              // IconButton(
-              //   icon: const Icon(
-              //       Icons.file_download,
-              //     color: Colors.black,
-              //   ),
-              //   onPressed: updateData,
-              // ),
-            ],
-          ),
-        ),
+        // appBar: PreferredSize(
+        //   preferredSize: const Size.fromHeight(60),
+        //   child: AppBar(
+        //     title: const Text(
+        //       'Bit Walk',
+        //       style: TextStyle(
+        //         color: Colors.black,
+        //       ),
+        //     ),
+        //     backgroundColor: APP_BAR_COLOR,
+        //     elevation: 0.0,
+        //     actions: <Widget>[
+        //       const SizedBox(
+        //         height: 60,
+        //         width: 5,
+        //       ),
+        //       ElevatedButton.icon(
+        //         onPressed: healthStateNotifier.updateData,
+        //         style: ElevatedButton.styleFrom(
+        //           fixedSize: const Size(120,60),
+        //           primary: Colors.purple.withOpacity(0.3),
+        //           onPrimary: Colors.grey,
+        //         ),
+        //         icon: const Icon(
+        //           Icons.shop,
+        //           color: Colors.black,
+        //         ),
+        //         label: const Text(
+        //           "交換所",
+        //           style: TextStyle(
+        //             fontSize: 20,
+        //             color: Colors.black,
+        //             fontWeight: FontWeight.bold,
+        //           ),
+        //         ),
+        //       ),
+        //
+        //       const Spacer(),
+        //
+        //       ElevatedButton.icon(
+        //         onPressed: () {
+        //           pageRoutingStateNotifier.goShopPage();
+        //         },
+        //         style: ElevatedButton.styleFrom(
+        //           fixedSize: const Size(110,60),
+        //           primary: Colors.grey,
+        //           onPrimary: Colors.grey,
+        //         ),
+        //         icon: const Icon(
+        //           Icons.money,
+        //           color: Colors.black,
+        //         ),
+        //         label: Text(
+        //           "${healthStateNotifier.getAllStep() / 1000} gem",
+        //           style: const TextStyle(
+        //               fontSize: 20,
+        //               color: Colors.black
+        //           ),
+        //         ),
+        //       ),
+        //       const SizedBox(
+        //         height: 60,
+        //         width: 5,
+        //       ),
+        //       // IconButton(
+        //       //   icon: const Icon(
+        //       //       Icons.file_download,
+        //       //     color: Colors.black,
+        //       //   ),
+        //       //   onPressed: updateData,
+        //       // ),
+        //     ],
+        //   ),
+        // ),
 
         body: CustomScrollView(
           slivers: [
             SliverAppBar(
               backgroundColor: APP_BAR_COLOR,
-              pinned: true,
+              elevation: 0,
+              pinned: false,
+              floating: true,
+              snap: true,
+
               title: Text(
                 'walking_app',
                 style: TextStyle(
@@ -147,30 +151,30 @@ class HomePageState extends ConsumerState<HomePage> {
                 ),
               ),
               actions: [
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    fixedSize: const Size(100, 10),
-                    primary: Colors.white,
-                    onPrimary: Colors.grey,
-                    shape: const CircleBorder(
-                      side: BorderSide(
-                        color: Colors.black,
-                        width: 0.4,
-                        style: BorderStyle.solid,
-                      ),
-                    ),
-                  ),
-                  onPressed: () {
-                    pageRoutingStateNotifier.goMyPage();
-                  },
-                  child: const Text(
-                    '拓',
-                    style: TextStyle(
-                      fontSize: 30,
-                      color: Colors.black,
-                    ),
-                  ),
-                ),
+                // ElevatedButton(
+                //   style: ElevatedButton.styleFrom(
+                //     fixedSize: const Size(100, 10),
+                //     primary: Colors.white,
+                //     onPrimary: Colors.grey,
+                //     shape: const CircleBorder(
+                //       side: BorderSide(
+                //         color: Colors.black,
+                //         width: 0.4,
+                //         style: BorderStyle.solid,
+                //       ),
+                //     ),
+                //   ),
+                //   onPressed: () {
+                //     pageRoutingStateNotifier.goMyPage();
+                //   },
+                //   child: const Text(
+                //     '拓',
+                //     style: TextStyle(
+                //       fontSize: 30,
+                //       color: Colors.black,
+                //     ),
+                //   ),
+                // ),
               ],
             ),
             SliverList(

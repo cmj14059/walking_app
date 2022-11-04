@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:math';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:walking_app/const/color/color.dart';
 
 import '../../view_model/home_page/health/health_notifier.dart';
 
@@ -20,7 +21,7 @@ class CircleProgress extends CustomPainter {
     //歩いた分
     Paint completeArc = Paint()
       ..strokeWidth = 30
-      ..color = Colors.cyan
+      ..color = CIRCLE_PROGESS_COLOR
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round;
 
@@ -72,8 +73,8 @@ Widget showCircleProgress(WidgetRef ref) {
             child: Text(
               '今日の歩数',
               style: TextStyle(
-                  color: Colors.cyan,
-                  fontSize: 30
+                color: WHITE,
+                fontSize: 30,
               ),
             ),
           ),

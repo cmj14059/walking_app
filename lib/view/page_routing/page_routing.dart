@@ -49,7 +49,7 @@ class PageRouting extends ConsumerWidget{
         ],
         selectedIconTheme: const IconThemeData(
           size: 40,
-          color: BOTTOM_BAR_ITEM_COLOR,
+          color: BOTTOM_BAR_SELECTED_ITEM_COLOR,
           shadows: [
             Shadow(
               color: Colors.blueGrey,
@@ -68,7 +68,7 @@ class PageRouting extends ConsumerWidget{
             )
           ],
         ),
-        backgroundColor: Colors.blue,
+        backgroundColor: BOTTOM_BAR_COLOR,
         enableFeedback: true,
         type: BottomNavigationBarType.fixed,
         currentIndex: selectIndex,

@@ -1,0 +1,1 @@
+const double MAXIMIZE_WALK_STEP = 10000;
