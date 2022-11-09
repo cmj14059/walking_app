@@ -8,17 +8,20 @@ import 'package:walking_app/view_model/home_page/health/health_notifier.dart';
 
 import '../../model/health/health_state.dart';
 
-class StepBarChart extends ConsumerStatefulWidget {
-  const StepBarChart({Key? key}) : super(key: key);
+class DistanceBarChart extends ConsumerStatefulWidget {
+  const DistanceBarChart({Key? key}) : super(key: key);
 
   @override
-  StepBarChartState createState() => StepBarChartState();
+  DistanceBarChartState createState() => DistanceBarChartState();
 }
 
-class StepBarChartState extends ConsumerState<StepBarChart> {
+class DistanceBarChartState extends ConsumerState<DistanceBarChart> {
 
   @override
   Widget build(BuildContext context) {
+
+    var screenSize = MediaQuery.of(context).size;
+
     List<BarChartGroupData> barGroups = getBarGroups();
     BarTouchData barTouchData = getBarTouchData();
 
@@ -30,7 +33,7 @@ class StepBarChartState extends ConsumerState<StepBarChart> {
         barGroups: barGroups,
         gridData: FlGridData(show: false),
         alignment: BarChartAlignment.spaceAround,
-        maxY: MAXIMIZE_WALK_STEP * 1.3,
+        maxY: MAXIMIZE_WALK_DISTANCE * 1.3,
       ),
     );
   }
@@ -77,39 +80,39 @@ class StepBarChartState extends ConsumerState<StepBarChart> {
   }
 
   FlTitlesData get titlesData => FlTitlesData(
-        show: true,
-        bottomTitles: AxisTitles(
-          sideTitles: SideTitles(
-            showTitles: true,
-            reservedSize: 30,
-            getTitlesWidget: getTitles,
-          ),
-        ),
-        leftTitles: AxisTitles(
-          sideTitles: SideTitles(showTitles: false),
-        ),
-        topTitles: AxisTitles(
-          sideTitles: SideTitles(showTitles: false),
-        ),
-        rightTitles: AxisTitles(
-          sideTitles: SideTitles(showTitles: false),
-        ),
-      );
+    show: true,
+    bottomTitles: AxisTitles(
+      sideTitles: SideTitles(
+        showTitles: true,
+        reservedSize: 30,
+        getTitlesWidget: getTitles,
+      ),
+    ),
+    leftTitles: AxisTitles(
+      sideTitles: SideTitles(showTitles: false),
+    ),
+    topTitles: AxisTitles(
+      sideTitles: SideTitles(showTitles: false),
+    ),
+    rightTitles: AxisTitles(
+      sideTitles: SideTitles(showTitles: false),
+    ),
+  );
 
   FlBorderData get borderData => FlBorderData(
-        show: false,
-      );
+    show: false,
+  );
 
   LinearGradient get _barsGradient => const LinearGradient(
-        colors: WALK_BAR_CHART_COLOR,
-        begin: Alignment.bottomCenter,
-        end: Alignment.topCenter,
-      );
+    colors: WALK_BAR_CHART_COLOR,
+    begin: Alignment.bottomCenter,
+    end: Alignment.topCenter,
+  );
 
   BarTouchData getBarTouchData() {
     final healthState = ref.watch(healthNotifierProvider);
     final healthStateNotifier = ref.watch(healthNotifierProvider.notifier);
-    List<num> weekStepList = healthStateNotifier.getWeekStepList();
+    List<num> weekStepList = healthStateNotifier.getWeekDistanceList();
 
     BarTouchData barTouchData = BarTouchData(
       enabled: false,
@@ -118,11 +121,11 @@ class StepBarChartState extends ConsumerState<StepBarChart> {
         tooltipPadding: EdgeInsets.zero,
         tooltipMargin: 5,
         getTooltipItem: (
-          BarChartGroupData group,
-          int groupIndex,
-          BarChartRodData rod,
-          int rodIndex,
-        ) {
+            BarChartGroupData group,
+            int groupIndex,
+            BarChartRodData rod,
+            int rodIndex,
+            ) {
           return BarTooltipItem(
             //rod.toY.round().toString(),
             weekStepList[6 - groupIndex].toString(),
@@ -140,14 +143,14 @@ class StepBarChartState extends ConsumerState<StepBarChart> {
   List<BarChartGroupData> getBarGroups() {
     final healthState = ref.watch(healthNotifierProvider);
     final healthStateNotifier = ref.watch(healthNotifierProvider.notifier);
-    List<num> weekStepList = healthStateNotifier.getWeekStepList();
+    List<num> weekDistanceList = healthStateNotifier.getWeekDistanceList();
 
     List<BarChartGroupData> list = [
       BarChartGroupData(
         x: 0,
         barRods: [
           BarChartRodData(
-            toY: limitWalkStep(weekStepList[6].toDouble()),
+            toY: limitWalkDistance(weekDistanceList[6].toDouble()),
             gradient: _barsGradient,
           )
         ],
@@ -157,7 +160,7 @@ class StepBarChartState extends ConsumerState<StepBarChart> {
         x: 1,
         barRods: [
           BarChartRodData(
-            toY: limitWalkStep(weekStepList[5].toDouble()),
+            toY: limitWalkDistance(weekDistanceList[5].toDouble()),
             gradient: _barsGradient,
           )
         ],
@@ -167,7 +170,7 @@ class StepBarChartState extends ConsumerState<StepBarChart> {
         x: 2,
         barRods: [
           BarChartRodData(
-            toY: limitWalkStep(weekStepList[4].toDouble()),
+            toY: limitWalkDistance(weekDistanceList[4].toDouble()),
             gradient: _barsGradient,
           )
         ],
@@ -177,7 +180,7 @@ class StepBarChartState extends ConsumerState<StepBarChart> {
         x: 3,
         barRods: [
           BarChartRodData(
-            toY: limitWalkStep(weekStepList[3].toDouble()),
+            toY: limitWalkDistance(weekDistanceList[3].toDouble()),
             gradient: _barsGradient,
           )
         ],
@@ -187,7 +190,7 @@ class StepBarChartState extends ConsumerState<StepBarChart> {
         x: 4,
         barRods: [
           BarChartRodData(
-            toY: limitWalkStep(weekStepList[2].toDouble()),
+            toY: limitWalkDistance(weekDistanceList[2].toDouble()),
             gradient: _barsGradient,
           )
         ],
@@ -197,7 +200,7 @@ class StepBarChartState extends ConsumerState<StepBarChart> {
         x: 5,
         barRods: [
           BarChartRodData(
-            toY: limitWalkStep(weekStepList[1].toDouble()),
+            toY: limitWalkDistance(weekDistanceList[1].toDouble()),
             gradient: _barsGradient,
           )
         ],
@@ -207,7 +210,7 @@ class StepBarChartState extends ConsumerState<StepBarChart> {
         x: 6,
         barRods: [
           BarChartRodData(
-            toY: limitWalkStep(weekStepList[0].toDouble()),
+            toY: limitWalkDistance(weekDistanceList[0].toDouble()),
             gradient: _barsGradient,
           )
         ],
@@ -246,8 +249,8 @@ class StepBarChartState extends ConsumerState<StepBarChart> {
     return weekday;
   }
 
-  double limitWalkStep(double step) {
-    if (step > MAXIMIZE_WALK_STEP) return MAXIMIZE_WALK_STEP;
+  double limitWalkDistance(double step) {
+    if (step > MAXIMIZE_WALK_DISTANCE) return MAXIMIZE_WALK_DISTANCE;
     return step;
   }
 }

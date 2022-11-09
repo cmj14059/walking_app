@@ -2,6 +2,7 @@ import 'package:health/health.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:walking_app/const/steps/walk_steps.dart';
 import 'package:walking_app/model/health/health_state.dart';
 
 
@@ -29,7 +30,7 @@ class HealthNotifier extends StateNotifier<HealthState> {
       // HealthDataType.WEIGHT,
       // HealthDataType.HEIGHT,
       // HealthDataType.BLOOD_GLUCOSE,
-      // HealthDataType.DISTANCE_WALKING_RUNNING,
+      HealthDataType.DISTANCE_WALKING_RUNNING,
     ];
 
     state = HealthState(appState: AppState.FETCHING_DATA);
@@ -51,22 +52,10 @@ class HealthNotifier extends StateNotifier<HealthState> {
         fourList.addAll(await health.getHealthDataFromTypes(startFour, endFour, types));
         fiveList.addAll(await health.getHealthDataFromTypes(startFive, endFive, types));
         sixList.addAll(await health.getHealthDataFromTypes(startSix, endSix, types));
-
-
-        // /// 一週間分の歩数を今日を除いて取得
-        // for(int i = 1; i < 7; i++) {
-        //   final pastNow = now.subtract(Duration(days: i));
-        //   DateTime startPastDate = DateTime(pastNow.year, pastNow.month, pastNow.day, 0, 0, 0);
-        //   DateTime endPastDate = DateTime(pastNow.year, pastNow.month, pastNow.day, 23, 59, 59);
-        //   /// Fetch new data
-        //   List<HealthDataPoint> healthData =
-        //   await health.getHealthDataFromTypes(startPastDate, endPastDate, types);
-        //   /// Save all the new data points
-        //   _healthWeekDataList[i].addAll(healthData);
-        // }
       } catch (e) {
         print("Caught exception in getHealthDataFromTypes: $e");
       }
+
       weekList.add(nowList);
       weekList.add(oneList);
       weekList.add(twoList);
@@ -76,9 +65,6 @@ class HealthNotifier extends StateNotifier<HealthState> {
       weekList.add(sixList);
 
       /// Filter out duplicates
-      // for (var x in weekList) {
-      //   x = HealthFactory.removeDuplicates(x);
-      // }
       nowList = HealthFactory.removeDuplicates(nowList);
       oneList = HealthFactory.removeDuplicates(oneList);
       twoList = HealthFactory.removeDuplicates(twoList);
@@ -128,6 +114,7 @@ class HealthNotifier extends StateNotifier<HealthState> {
       "${getAllStep()}",
       style: const TextStyle(
         color: Colors.black,
+        fontWeight: FontWeight.bold,
         fontSize: 75,
       ),
     );
@@ -156,9 +143,8 @@ class HealthNotifier extends StateNotifier<HealthState> {
   Widget content() {
     if (state.appState == AppState.DATA_READY)
       return _contentDataReady();
-    else if (state.appState == AppState.NO_DATA) {
+    else if (state.appState == AppState.NO_DATA)
       return _contentNoData();
-    }
     else if (state.appState == AppState.FETCHING_DATA)
       return _contentFetchingData();
     else if (state.appState == AppState.AUTH_NOT_GRANTED)
@@ -170,35 +156,76 @@ class HealthNotifier extends StateNotifier<HealthState> {
 
   /// 歩数が手動入力かどうか判定
   bool isManualData(HealthDataPoint p) {
-    if(p.sourceId == "com.apple.Health") {
-      return true;
-    } else {
-      return false;
+    // if(p.sourceId == "com.apple.Health") {
+    //   return true;
+    // } else {
+    //   return false;
+    // }
+    return false;
+  }
+
+  /// 全体のリストから歩数のみをリストで取得
+  List<HealthDataPoint> takeOutStep(List<HealthDataPoint> list) {
+    List<HealthDataPoint> stepsList = [];
+    for(var x in list) {
+      if(x.type == HealthDataType.STEPS) stepsList.add(x);
     }
+    return stepsList;
+  }
+
+  /// 全体のリストから距離のみを取り出してリストで取得
+  List<HealthDataPoint> takeOutDistance(List<HealthDataPoint> list) {
+    List<HealthDataPoint> distanceList = [];
+    for(var x in list) {
+      if(x.type == HealthDataType.DISTANCE_WALKING_RUNNING) distanceList.add(x);
+    }
+    return distanceList;
   }
 
   /// 今日の歩数の合計をnum型で取得
   num getAllStep() {
     num pAll = 0;
-    for(var x in nowList) {
-      // if(!isManualData(p)) {
-      //   pAll += x.value.hashCode;
-      // }
-      pAll += x.value.hashCode;
+    for(var x in takeOutStep(nowList)) {
+      if(!isManualData(x)) {
+        String xString = x.value.toString();
+        pAll += double.parse(xString);
+      }
     }
-    return pAll;
+    return pAll.toInt();
   }
-
   /// 指定したリストの歩数合計を取得
   num getTheAllStep(List<HealthDataPoint> list) {
     num pAll = 0;
-    for(var x in list) {
-      // if(!isManualData(p)) {
-      //   pAll += x.value.hashCode;
-      // }
-      pAll += x.value.hashCode;
+    for(var x in takeOutStep(list)) {
+      if(!isManualData(x)) {
+        String xString = x.value.toString();
+        pAll += double.parse(xString);
+      }
     }
-    return pAll;
+    return pAll.toInt();
+  }
+
+  /// 今日の走行距離の合計をnum型で取得
+  num getAllDistance() {
+    num pAll = 0;
+    for(var x in takeOutDistance(nowList)) {
+      if(!isManualData(x)) {
+        String xString = x.value.toString();
+        pAll += meterToKiloMeter(double.parse(xString));
+      }
+    }
+    return double.parse(pAll.toStringAsFixed(DISTANCE_SIG_FIG));
+  }
+  /// 指定したリストの走行距離合計を取得
+  num getTheAllDistance(List<HealthDataPoint> list) {
+     num pAll = 0;
+    for(var x in takeOutDistance(list)) {
+      if(!isManualData(x)) {
+        String xString = x.value.toString();
+        pAll += meterToKiloMeter(double.parse(xString));
+      }
+    }
+    return double.parse(pAll.toStringAsFixed(DISTANCE_SIG_FIG));
   }
 
   /// 一週間の歩数のリストを取得
@@ -213,6 +240,25 @@ class HealthNotifier extends StateNotifier<HealthState> {
     weekStepList.add(getTheAllStep(sixList));
     return weekStepList;
   }
+
+  /// 一週間の距離のリストを取得
+  List<num> getWeekDistanceList() {
+    List<num> weekDistanceList = [];
+    weekDistanceList.add(getTheAllDistance(nowList));
+    weekDistanceList.add(getTheAllDistance(oneList));
+    weekDistanceList.add(getTheAllDistance(twoList));
+    weekDistanceList.add(getTheAllDistance(threeList));
+    weekDistanceList.add(getTheAllDistance(fourList));
+    weekDistanceList.add(getTheAllDistance(fiveList));
+    weekDistanceList.add(getTheAllDistance(sixList));
+    return weekDistanceList;
+  }
+
+  /// mをkmに変換
+  double meterToKiloMeter(double m) {
+    return m / 1000;
+  }
+
 
   /// データを最新の状態に更新
   Future<void> updateData() async {

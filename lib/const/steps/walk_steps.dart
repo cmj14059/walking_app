@@ -1,1 +1,3 @@
 const double MAXIMIZE_WALK_STEP = 10000;
+const double MAXIMIZE_WALK_DISTANCE = 50;
+const int DISTANCE_SIG_FIG = 1;
